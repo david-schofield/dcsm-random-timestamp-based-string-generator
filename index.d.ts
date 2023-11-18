@@ -1,16 +1,20 @@
 declare module 'dcsm-random-timestamp-based-string-generator' {
 
-  export function randomTBS(): RandomTimestampBasedStringGenerator;
-
-  export function timestampFromRandomTBS(string: string): number;
-
-  export function generateRandomTBS(): string;
-
-  export class RandomTBS {
+  class RandomTBS {
     constructor();
     generate(): string;
     retriveTimestamp(stringGeneratedByRandomTimestampBasedString: string): number;
   }
-  
+
+  function randomTBS() {
+    return new RandomTBS();
+  }
+
+  function timestampFromRandomTBS(string: string): number;
+
+  function generateRandomTBS(): string;
+
+  export { RandomTBS, randomTBS, timestampFromRandomTBS, generateRandomTBS };
+
   export default generateRandomTBS;
 }

@@ -1,7 +1,17 @@
 import {
-  TypeOf,
-  typeOfSilent
+  getTypeOf,
+  typeOfShorthand
 } from 'dcsm-type-helper';
+
+const {
+  isNumberPositive,
+  isNumberMaxSafeInteger,
+  isEmptyString,
+  notString,
+  notNumberPositive,
+  notNumberMaxSafeInteger
+} = typeOfShorthand;
+
 
 /**
  * Checks if a given timestamp is valid or not.
@@ -10,9 +20,8 @@ import {
  * @returns {boolean} - Returns true if the timestamp is valid, false otherwise.
  */
 function isValidTimestamp(timeSinceCreationOfModule, valueOfDateWhenThisModuleWasCreated) {
-  const typeOf = new TypeOf(timeSinceCreationOfModule, valueOfDateWhenThisModuleWasCreated);
-  typeOf.setOptions = { disableThrowErrors: true };
-  if (typeOf.isNumberPositive === true && typeOf.isNumberMaxSafeInteger === true) {
+
+  if (isNumberPositive(timeSinceCreationOfModule, valueOfDateWhenThisModuleWasCreated) && isNumberMaxSafeInteger(timeSinceCreationOfModule, valueOfDateWhenThisModuleWasCreated)) {
     try {
       let timeNumber = timeSinceCreationOfModule + valueOfDateWhenThisModuleWasCreated;
       new Date(timeNumber).valueOf();
@@ -69,7 +78,7 @@ class RandomTimestampBasedStringGenerator {
     let randomAlphabeticalString;
 
     if (newTimestamp === this.#previous.timestamp) {
-    //if (newTimestamp <= (this.#previous.timestamp + 20)) {
+      //if (newTimestamp <= (this.#previous.timestamp + 20)) {
       timestamp = this.#previous.timestamp;
       randomAlphabeticalString = this.#incrementBase51value(this.#previous.randomAlphabeticalString);
       this.#previous.randomAlphabeticalString = randomAlphabeticalString;
@@ -147,20 +156,34 @@ class RandomTimestampBasedStringGenerator {
    */
   #retriveTimestampFromGeneratedRandomTimestampBasedString(string) {
     const valueOfDateWhenThisModuleWasCreated = 1694604738572;
-    const fallback = valueOfDateWhenThisModuleWasCreated; //new Date(valueOfDateWhenThisModuleWasCreated).valueOf();
+    const errorMessage = ['Invalid generated random timestamp-based string!'];
 
-    if (/^[B-Za-z]+A[B-Za-z]+$/.test(`${string}`) === false) {
-      return fallback;
+    if (notString(string)) {
+      errorMessage.push('A string is required! Received: ' + getTypeOf(string));
     }
 
-    const timeSinceCreationOfModule = this.#convertBase51AlphabeticalStringToNumber(`${string}`.replace(/A[B-Za-z]+$/, ''));
+    if (/^[B-Za-z]+A[B-Za-z]+$/.test(`${string}`) === false) {
+      errorMessage.push('The string does not match the required pattern /^[B-Za-z]+A[B-Za-z]+$/ for a random timestamp-based string!');
+    }
 
-    if (isValidTimestamp(timeSinceCreationOfModule, valueOfDateWhenThisModuleWasCreated) === true) {
-      return timeSinceCreationOfModule + valueOfDateWhenThisModuleWasCreated;
-    } 
+    const base51EncodedTimestamp = `${string}`.replace(/A[B-Za-z]+$/, '');
+    if (/^[B-Za-z]+$/.test(base51EncodedTimestamp) === false) {
+      errorMessage.push('The base51-encoded timestamp does not match the required pattern /^[B-Za-z]+$/!');
+    }
 
-    return fallback;
+    const timeSinceCreationOfModule = this.#convertBase51AlphabeticalStringToNumber(base51EncodedTimestamp);
+    if (isValidTimestamp(timeSinceCreationOfModule, valueOfDateWhenThisModuleWasCreated) === false) {
+      errorMessage.push('The timestamp is invalid! The timestamp should be a positive integer less than or equal to Number.MAX_SAFE_INTEGER!');
+    }
 
+    // Throw an error if the timestamp is invalid with a list of possible reasons why it is invalid.
+    if (errorMessage.length > 1) {
+      const error = new Error(errorMessage.join('\n'));
+      error.name = 'InvalidTimestampError (dcsm-random-timestamp-based-string-generator)';
+      throw error;
+    }
+
+    return timeSinceCreationOfModule + valueOfDateWhenThisModuleWasCreated;
   };
 
   /**
@@ -170,7 +193,7 @@ class RandomTimestampBasedStringGenerator {
    * @returns {string} The Base51-encoded string.
    */
   #convertNumberToBase51(number) {
-    if (typeOfSilent(number).isNumberPositive !== true && typeOfSilent(number).isNumberMaxSafeInteger !== true) {
+    if (notNumberPositive(number) && notNumberMaxSafeInteger(number)) {
       return 'B';
     }
     const Base51Alphabet = 'BCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -193,7 +216,7 @@ class RandomTimestampBasedStringGenerator {
     const Base51Characters = 'BCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     let output = 0;
 
-    if (typeOfSilent(string).isEmptyString === (true || undefined)) {
+    if (isEmptyString(string) === (true || undefined)) {
       return output;
     }
 
@@ -201,7 +224,7 @@ class RandomTimestampBasedStringGenerator {
       output += Base51Characters.indexOf(string[i]) * Math.pow(51, string.length - i - 1);
     }
 
-    if (typeOfSilent(output).isNumberPositive !== true && typeOfSilent(output).isNumberMaxSafeInteger !== true) {
+    if (notNumberPositive(output) && notNumberMaxSafeInteger(output)) {
       return 0;
     }
 

@@ -1,5 +1,8 @@
 # Random Timestamp-Based String Generator
 
+[![npm version](https://badge.fury.io/js/dcsm-random-timestamp-based-string-generator.svg)](https://badge.fury.io/js/dcsm-random-timestamp-based-string-generator)
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
+
 A library for generating uniqe random alphabetical strings based on the current timestamp. It also provides a method for retrieving the timestamp from a generated string.
 
 ## Why use this module?
