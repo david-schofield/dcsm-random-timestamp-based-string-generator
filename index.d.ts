@@ -6,9 +6,7 @@ declare module 'dcsm-random-timestamp-based-string-generator' {
     retriveTimestamp(stringGeneratedByRandomTimestampBasedString: string): number;
   }
 
-  function randomTBS() {
-    return new RandomTBS();
-  }
+  function randomTBS(): RandomTBS;
 
   function timestampFromRandomTBS(string: string): number;
 

@@ -1,7 +1,7 @@
 {
   "name": "dcsm-random-timestamp-based-string-generator",
   "description": "A library for generating uniqe random alphabetical strings based on the current timestamp. It also provides a method for retrieving the timestamp from a generated string.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "repository": "david-schofield/dcsm-random-timestamp-based-string-generator",
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -34,10 +34,10 @@
   "author": "David Schofield <david@schofield.se> (https://schofield.se/)",
   "license": "MPL-2.0",
   "dependencies": {
-    "dcsm-type-helper": "^4.0.0"
+    "dcsm-type-helper": "^4.0.1"
   },
   "devDependencies": {
     "jest": "^27.0.6",
-    "dcsm-print": "^1.2.0"
+    "dcsm-print": "^1.2"
   }
 }
